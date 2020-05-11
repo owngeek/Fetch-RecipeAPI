@@ -1,26 +1,81 @@
-import React from 'react';
-import logo from './logo.svg';
+import React ,{useEffect, useState} from 'react';
 import './App.css';
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Recipe from "./component/RecipeComponent"
+
+const App =(props) =>{
+  const [alcohol,setAlcohol]=useState([""])
+  const [search,setSearch]=useState('')
+  const [query,setQuery]=useState("beers")
+
+useEffect(()=>{
+  getbeer();
+ 
+},[query])
+
+
+
+
+const API_KEY=`https://api.punkapi.com/v2/${query}?brewed_before=11-2012&abv_gt=6`
+
+
+const getbeer = async() =>{
+const response = await fetch (API_KEY)
+const data = await response.json()
+console.log(data)
+
+
+  setAlcohol(data)
+ 
+
+
+
+
 }
 
-export default App;
+const updateSearch = e =>{
+setSearch(e.target.value)
+console.log(search)
+
+
+}
+
+
+const getSearch = (e) =>{
+  e.preventDefault();
+  setQuery(search)
+  setSearch('')
+}
+
+
+  return(
+    <div className="App">
+<form onSubmit={getSearch} className="serch-form" >
+  <input type="text" className="serch-bar" name="search" value={search} onChange={updateSearch}/>
+  <button type="submit" className="serch-button btn btn-success">search</button>
+
+</form>
+
+<div className="container">
+<div className="wrap_card">
+
+
+{alcohol.map((alcohols) =>(
+  <Recipe
+  key={alcohols.id}
+name={alcohols.name}
+image={alcohols.image_url}
+description={alcohols.description}
+  
+  />
+))}
+
+
+
+</div>
+</div>
+    </div>
+  )
+}
+export default App
